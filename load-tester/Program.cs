@@ -4,39 +4,39 @@ using NBomber.Http.CSharp;
 
 class Program
 {
+#pragma warning disable IDE0060 // Remove unused parameter
     static void Main(string[] args)
+#pragma warning restore IDE0060 // Remove unused parameter
     {
         using var httpClient = new HttpClient();
 
-        var scenario = Scenario.Create("NBomberLoadTester", async context =>
+        var combinedScenario = Scenario.Create("CombinedListingTest_50_50", async context =>
         {
-            var request = Http.CreateRequest("GET", "https://localhost:7297/listings")
-            .WithHeader("Accept", "text/html");
+            var stepIndex = context.InvocationNumber % 2;
 
-            var response = await Http.Send(httpClient, request);
-            System.Diagnostics.Debug.WriteLine($"Response status: {response}");
-            return response;
+            if (stepIndex == 0)
+            {
+                var request = Http.CreateRequest("GET", "https://localhost:7297/api/listing")
+                    .WithHeader("Accept", "application/json");
+
+                return await Http.Send(httpClient, request);
+            }
+            else
+            {
+                var id = 31094;
+                var request = Http.CreateRequest("GET", $"https://localhost:7297/api/listing/{id}")
+                    .WithHeader("Accept", "application/json");
+
+                return await Http.Send(httpClient, request);
+            }
         })
-
         .WithoutWarmUp()
         .WithLoadSimulations(
-            //Simulation.RampingInject(rate: 1000,
-            //                         interval: TimeSpan.FromSeconds(1),
-            //                         during: TimeSpan.FromSeconds(30))
-            Simulation.Inject(rate: 10,
-                              interval: TimeSpan.FromSeconds(1),
-                              during: TimeSpan.FromSeconds(30))
-
-        //Simulation.RampingInject(rate: 5000,
-        //                        interval: TimeSpan.FromSeconds(1),
-        //                        during: TimeSpan.FromSeconds(10)),
-        //Simulation.Inject(rate: 1000,
-        //interval: TimeSpan.FromSeconds(1),
-        //during: TimeSpan.FromSeconds(10))
+            Simulation.RampingInject(rate: 100, interval: TimeSpan.FromSeconds(1), during: TimeSpan.FromSeconds(30))
         );
 
         NBomberRunner
-            .RegisterScenarios(scenario)
+            .RegisterScenarios(combinedScenario)
             .WithWorkerPlugins(new HttpMetricsPlugin([HttpVersion.Version1]))
             .Run();
     }

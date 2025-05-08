@@ -7,10 +7,6 @@ namespace api;
 
 public partial class InsideAirbnetbDbContext : DbContext
 {
-    public InsideAirbnetbDbContext()
-    {
-    }
-
     public InsideAirbnetbDbContext(DbContextOptions<InsideAirbnetbDbContext> options)
         : base(options)
     {
@@ -80,15 +76,22 @@ public partial class InsideAirbnetbDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("reviews");
+            entity.ToTable("reviews");
 
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Comments).HasColumnName("comments");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.ListingId).HasColumnName("listing_id");
+            entity.Property(e => e.ReviewerId).HasColumnName("reviewer_id");
+            entity.Property(e => e.ReviewerName)
+                .HasMaxLength(50)
+                .HasColumnName("reviewer_name");
 
-            entity.HasOne(d => d.Listing).WithMany()
+            entity.HasOne(d => d.Listing).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.ListingId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_reviews_listing");
         });
 

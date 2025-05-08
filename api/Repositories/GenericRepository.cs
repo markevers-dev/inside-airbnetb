@@ -20,11 +20,17 @@ namespace api.Repositories
         }
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(long id)
         {
             var entity = await _dbSet.FindAsync(id);
             // TODO: Return not found exception when not found, handle it in controller (like in Spotitube)
-            return entity;
+            return entity!;
+        }
+
+        public async Task<List<T>> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            List<T> entities = await _dbSet.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return entities;
         }
 
         public async Task AddAsync(T entity)

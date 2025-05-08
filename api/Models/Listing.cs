@@ -40,4 +40,6 @@ public partial class Listing
     public short NumberOfReviewsLtm { get; set; }
 
     public string? License { get; set; }
+
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
