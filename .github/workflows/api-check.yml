@@ -16,10 +16,10 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore Dependencies
-        run: dotnet restore /api/api.sln
+        run: dotnet restore api/api.sln
 
       - name: Run Code Formatter (API)
-        run: dotnet format /api/api.sln --verify-no-changes 
+        run: dotnet format api/api.sln --verify-no-changes 
 
       - name: Run Code Analyzers (API)
-        run: dotnet build /api/api.sln --no-restore /warnaserror
+        run: dotnet build api/api.sln --no-restore /warnaserror
