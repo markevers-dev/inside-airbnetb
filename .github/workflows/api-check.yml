@@ -16,7 +16,7 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore /api/api.sln
 
       - name: Run Code Formatter (API)
         run: dotnet format /api/api.sln --verify-no-changes 
