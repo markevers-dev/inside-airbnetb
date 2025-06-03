@@ -1,0 +1,25 @@
+name: Check API Code Formatting & Linting
+
+on: [push, pull_request]
+
+jobs:
+  format-lint:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore Dependencies
+        run: dotnet restore api/api.sln
+
+      - name: Run Code Formatter (API)
+        run: dotnet format api/api.sln --verify-no-changes 
+
+      - name: Run Code Analyzers (API)
+        run: dotnet build api/api.sln --no-restore /warnaserror
