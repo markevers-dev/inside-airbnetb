@@ -1,0 +1,70 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cozy Apartment in Amager",
+        "roomType": "Entire home/apt",
+        "price": 950,
+        "neighbourhood": "Amager st"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.5935, 55.6657]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Budget Room in Bispebjerg",
+        "roomType": "Private room",
+        "price": 450,
+        "neighbourhood": "Bispebjerg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.5186, 55.7121]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Stylish Flat in Frederiksberg",
+        "roomType": "Entire home/apt",
+        "price": 1100,
+        "neighbourhood": "Frederiksberg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.5352, 55.6784]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shared Room in Brønshøj",
+        "roomType": "Shared room",
+        "price": 300,
+        "neighbourhood": "Brnshj-Husum"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.4938, 55.7032]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Luxury Suite in Amager Vest",
+        "roomType": "Hotel room",
+        "price": 1600,
+        "neighbourhood": "Amager Vest"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.5821, 55.6423]
+      }
+    }
+  ]
+}
