@@ -79,8 +79,10 @@ export const Map = ({ accessToken }: MapProps) => {
           </DrawerHeader>
         )}
         <DrawerFooter>
-          <DrawerClose>
-            <Button variant="outline">Close</Button>
+          <DrawerClose asChild>
+            <Button variant="outline" className="w-max hover:cursor-pointer">
+              Close
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

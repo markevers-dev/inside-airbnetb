@@ -56,13 +56,13 @@ const Home = () => {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="flex flex-col max-xl:space-y-8 xl:flex-row xl:space-x-8">
+        <CardContent className="flex flex-col space-y-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 size="sm"
                 variant="outline"
-                className="w-max hover:cursor-pointer"
+                className="!h-fit w-fit !text-balance hover:cursor-pointer"
               >
                 {selectedNeighbourhood !== ''
                   ? `Neighbourhood: ${selectedNeighbourhood}`
@@ -92,13 +92,13 @@ const Home = () => {
           <Map
             accessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? ''}
           />
-          <div className="flex flex-col items-start justify-start space-x-4 md:flex-row md:space-x-8">
+          <div className="flex flex-col items-start justify-start max-lg:space-y-4 lg:flex-row lg:space-x-8">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-max hover:cursor-pointer"
+                  className="!h-fit w-fit !text-balance hover:cursor-pointer"
                 >
                   {priceRange !== ''
                     ? `Price Range: ${priceRange}`
@@ -129,7 +129,7 @@ const Home = () => {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-max hover:cursor-pointer"
+                  className="!h-fit w-fit !text-balance hover:cursor-pointer"
                 >
                   {numberOfReviews != 0
                     ? `Number of Reviews: ${numberOfReviews}+`
