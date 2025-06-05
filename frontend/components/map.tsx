@@ -1,7 +1,7 @@
 'use client';
 
 import MapGL, { NavigationControl, Source, Layer } from 'react-map-gl/mapbox';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
   Drawer,
@@ -24,8 +24,29 @@ interface MapProps {
 }
 
 export const Map = ({ accessToken }: MapProps) => {
+  const [geoJson, setGeoJson] = useState<any>(null);
   const [selectedHome, setSelectedHome] = useState<any>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+
+  console.log(selectedHome);
+
+  useEffect(() => {
+    const fetchGeoJson = async () => {
+      try {
+        const response = await fetch(
+          'https://localhost:7297/api/listing?pageNumber=1&pageSize=200',
+        );
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setGeoJson(data);
+      } catch (error) {
+        console.error('Error fetching GeoJSON:', error);
+      }
+    };
+    fetchGeoJson();
+  }, []);
 
   return (
     <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
@@ -47,19 +68,21 @@ export const Map = ({ accessToken }: MapProps) => {
         >
           <NavigationControl position="top-right" />
 
-          <Source id="mock-homes" type="geojson" data="/points.geojson">
-            <Layer
-              id="homes-layer"
-              type="circle"
-              paint={{
-                'circle-radius': 6,
-                'circle-color': '#ff0000',
-                'circle-stroke-color': '#ffffff',
-                'circle-stroke-width': 1,
-                'circle-opacity': 0.9,
-              }}
-            />
-          </Source>
+          {geoJson && (
+            <Source id="homes" type="geojson" data={geoJson}>
+              <Layer
+                id="homes-layer"
+                type="circle"
+                paint={{
+                  'circle-radius': 6,
+                  'circle-color': '#ff0000',
+                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-width': 1,
+                  'circle-opacity': 0.9,
+                }}
+              />
+            </Source>
+          )}
         </MapGL>
       </div>
 
@@ -67,11 +90,11 @@ export const Map = ({ accessToken }: MapProps) => {
         {selectedHome ? (
           <DrawerHeader className="p-4">
             <DrawerTitle className="text-lg font-bold">
-              {selectedHome.name}
+              Home {selectedHome.id}
             </DrawerTitle>
-            <p>Type: {selectedHome.roomType}</p>
+            {/* <p>Type: {selectedHome.roomType}</p>
             <p>Price: ${selectedHome.price}</p>
-            <p>Neighbourhood: {selectedHome.neighbourhood}</p>
+            <p>Neighbourhood: {selectedHome.neighbourhood}</p> */}
           </DrawerHeader>
         ) : (
           <DrawerHeader className="p-4">

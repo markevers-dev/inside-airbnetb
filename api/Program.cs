@@ -2,7 +2,18 @@ using api;
 using api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+string AllowedOrigins = "AllowedOrigin";
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowedOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000");
+                      });
+});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -36,6 +47,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inside Airbnetb API V1");
     });
 }
+
+app.UseCors(AllowedOrigins);
 
 app.UseHttpsRedirection();
 

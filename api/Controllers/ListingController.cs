@@ -49,16 +49,9 @@ namespace api.Controllers
                         ]
                     },
                     Properties = new Dictionary<string, object?>
-            {
-                { "id", listing.Id },
-                { "name", listing.Name },
-                { "price", listing.Price },
-                { "neighbourhood", listing.Neighbourhood },
-                { "roomType", listing.RoomType },
-                { "hostId", listing.HostId },
-                { "hostName", listing.HostName },
-                { "reviews", listing.NumberOfReviews },
-            }
+                    {
+                        { "id", listing.Id },
+                    }
                 })]
             };
 
