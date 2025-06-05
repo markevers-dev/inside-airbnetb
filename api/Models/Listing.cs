@@ -17,9 +17,9 @@ public partial class Listing
 
     public string Neighbourhood { get; set; } = null!;
 
-    public double Latitude { get; set; }
+    public string Latitude { get; set; } = null!;
 
-    public double Longitude { get; set; }
+    public string Longitude { get; set; } = null!;
 
     public string RoomType { get; set; } = null!;
 
@@ -33,7 +33,7 @@ public partial class Listing
 
     public double? ReviewsPerMonth { get; set; }
 
-    public short CalculatedHostListingsCount { get; set; }
+    public byte CalculatedHostListingsCount { get; set; }
 
     public short Availability365 { get; set; }
 

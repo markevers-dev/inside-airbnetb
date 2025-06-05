@@ -1,6 +1,8 @@
-﻿using api.Models;
+﻿using api.Dtos;
+using api.Models;
 using api.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace api.Controllers
 {
@@ -18,7 +20,8 @@ namespace api.Controllers
                 return BadRequest("Page number and size must be greater than zero.");
 
             var pagedListings = await _genericRepository.GetPagedAsync(pageNumber, pageSize);
-            return Ok(pagedListings);
+            GeoJsonFeatureCollection geoJson = ConvertToGeoJson(pagedListings);
+            return Ok(geoJson);
         }
 
         [HttpGet("{id}")]
@@ -28,6 +31,38 @@ namespace api.Controllers
             if (listing == null)
                 return NotFound();
             return Ok(listing);
+        }
+
+        private GeoJsonFeatureCollection ConvertToGeoJson(IEnumerable<Listing> listings)
+        {
+            var featureCollection = new GeoJsonFeatureCollection
+            {
+                Features = [.. listings.Select(listing => new GeoJsonFeature
+                {
+                    Geometry = new Geometry
+                    {
+                        Type = "Point",
+                        Coordinates =
+                        [
+                            double.Parse(listing.Longitude, CultureInfo.InvariantCulture),
+                            double.Parse(listing.Latitude, CultureInfo.InvariantCulture)
+                        ]
+                    },
+                    Properties = new Dictionary<string, object?>
+            {
+                { "id", listing.Id },
+                { "name", listing.Name },
+                { "price", listing.Price },
+                { "neighbourhood", listing.Neighbourhood },
+                { "roomType", listing.RoomType },
+                { "hostId", listing.HostId },
+                { "hostName", listing.HostName },
+                { "reviews", listing.NumberOfReviews },
+            }
+                })]
+            };
+
+            return featureCollection;
         }
     }
 }
