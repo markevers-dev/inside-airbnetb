@@ -30,6 +30,7 @@ const MAPBOX_PROPS = {
 interface MapProps {
   accessToken: string;
   geoJson: Geometry | null;
+  selectedNeighbourhood: string | null;
 }
 
 interface Review {
@@ -63,12 +64,18 @@ interface SelectedHome {
   reviews?: Review[];
 }
 
-export const Map = ({ accessToken, geoJson }: MapProps) => {
+export const Map = ({
+  accessToken,
+  geoJson,
+  selectedNeighbourhood,
+}: MapProps) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isSelectedHomeLoading, setIsSelectedHomeLoading] =
     useState<boolean>(false);
   const [selectedHome, setSelectedHome] = useState<SelectedHome | null>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [neighbourhoodGeoJson, setNeighbourhoodGeoJson] =
+    useState<Geometry | null>(null);
 
   useEffect(() => {
     const fetchSelectedHome = async () => {
@@ -97,6 +104,30 @@ export const Map = ({ accessToken, geoJson }: MapProps) => {
     fetchSelectedHome();
   }, [selectedId]);
 
+  useEffect(() => {
+    const fetchNeighbourhoodGeoJson = async () => {
+      if (!selectedNeighbourhood) {
+        setNeighbourhoodGeoJson(null);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://localhost:7297/api/neighbourhood/${selectedNeighbourhood}`,
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch neighbourhood data');
+        }
+        const data: Geometry = await response.json();
+        setNeighbourhoodGeoJson(data);
+      } catch (error) {
+        console.error('Error fetching neighbourhood GeoJSON:', error);
+      }
+    };
+
+    fetchNeighbourhoodGeoJson();
+  }, [selectedNeighbourhood]);
+
   return (
     <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
       <div className="relative h-[500px] w-full">
@@ -116,7 +147,22 @@ export const Map = ({ accessToken, geoJson }: MapProps) => {
           }}
         >
           <NavigationControl position="top-right" />
-
+          {neighbourhoodGeoJson && (
+            <Source
+              id="neighbourhood"
+              type="geojson"
+              data={neighbourhoodGeoJson}
+            >
+              <Layer
+                id="neighbourhood-layer"
+                type="fill"
+                paint={{
+                  'fill-color': '#888',
+                  'fill-opacity': 0.5,
+                }}
+              />
+            </Source>
+          )}
           {geoJson && (
             <Source id="homes" type="geojson" data={geoJson}>
               <Layer

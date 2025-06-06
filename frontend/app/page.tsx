@@ -59,6 +59,31 @@ const Home = () => {
   >(null);
   const [geoJson, setGeoJson] = useState<Geometry | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [neighbourhoods, setNeighbourhoods] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchNeighbourhoods = async () => {
+      try {
+        const response = await fetch(
+          'https://localhost:7297/api/neighbourhood',
+        );
+        if (!response.ok) {
+          throw new Error(
+            'Network response was not ok. Maybe it should seek therapy?',
+          );
+        }
+        const data = await response.json();
+        const neighbourhoodNames = data.map(
+          (neighbourhood: { neighbourhood1: string }) =>
+            neighbourhood.neighbourhood1,
+        );
+        setNeighbourhoods(neighbourhoodNames);
+      } catch (error) {
+        console.error('Error fetching neighbourhoods:', error);
+      }
+    };
+    fetchNeighbourhoods();
+  }, []);
 
   useEffect(() => {
     const fetchGeoJson = async () => {
@@ -122,7 +147,7 @@ const Home = () => {
                     Reset
                   </DropdownMenuItem>
                 )}
-                {MOCK_NEIGHBOURHOODS.map((neighbourhood) => (
+                {neighbourhoods?.map((neighbourhood) => (
                   <DropdownMenuItem
                     key={neighbourhood}
                     onClick={() => setSelectedNeighbourhood(neighbourhood)}
@@ -152,6 +177,7 @@ const Home = () => {
           <Map
             accessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? ''}
             geoJson={geoJson}
+            selectedNeighbourhood={selectedNeighbourhood}
           />
           <div className="flex flex-col items-start justify-start max-lg:space-y-4 lg:flex-row lg:space-x-8">
             <DropdownMenu>
