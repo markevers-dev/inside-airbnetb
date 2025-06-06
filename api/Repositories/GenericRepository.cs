@@ -16,7 +16,7 @@ namespace api.Repositories
 
         public IQueryable<T> GetQueryableAsync()
         {
-            return _dbSet.AsQueryable();
+            return _dbSet.AsQueryable<T>();
         }
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
 

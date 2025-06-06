@@ -8,17 +8,42 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../ui/8bit/dropdown-menu';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from '@/components/ui/8bit/navigation-menu';
 import { useUser } from '@auth0/nextjs-auth0';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/8bit/avatar';
 
-export const Header = () => {
+interface HeaderProps {
+  roles: string[];
+}
+
+export const Header = ({ roles }: HeaderProps) => {
   const { user } = useUser();
 
   return (
-    <header className="flex w-full flex-row items-center justify-between border-b-[0.5px] border-slate-950/10 bg-slate-100 px-8 py-4 text-slate-950 md:px-20">
-      <BlurReveal className="font-[family-name:var(--font-geist-mono)] text-xl font-bold md:text-3xl">
+    <header className="flex w-full flex-col items-center justify-between border-b-[0.5px] border-slate-950/10 bg-slate-100 px-8 py-4 text-slate-950 max-md:space-y-4 md:flex-row md:px-20">
+      <BlurReveal className="font-[family-name:var(--font-geist-mono)] text-2xl font-bold md:text-3xl">
         Inside Airbnetb
       </BlurReveal>
+
+      {roles.find((role) => role === 'Admin') && (
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink href="/charts">Charts</NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      )}
+
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="flex flex-row items-center gap-2 font-[family-name:var(--font-geist-mono)] font-bold hover:cursor-pointer">
