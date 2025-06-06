@@ -12,7 +12,7 @@ public partial class Review
 
     public DateOnly Date { get; set; }
 
-    public long ReviewerId { get; set; }
+    public int ReviewerId { get; set; }
 
     public string ReviewerName { get; set; } = null!;
 

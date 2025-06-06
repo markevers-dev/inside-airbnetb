@@ -41,5 +41,5 @@ public partial class Listing
 
     public string? License { get; set; }
 
-    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public virtual ICollection<Review> Reviews { get; set; } = [];
 }
