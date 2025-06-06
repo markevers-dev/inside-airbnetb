@@ -13,6 +13,13 @@ import {
 } from '@/components/ui/8bit/drawer';
 import { Button } from './ui/8bit/button';
 import type { Geometry } from 'geojson';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/8bit/accordion';
+import { ScrollArea } from '@/components/ui/8bit/scroll-area';
 
 const MAPBOX_PROPS = {
   longitude: 12.574698976221345,
@@ -25,9 +32,70 @@ interface MapProps {
   geoJson: Geometry | null;
 }
 
+interface Review {
+  id: number;
+  listingId: number;
+  date: Date;
+  reviewerId: number;
+  reviewerName: string;
+  comments: string;
+}
+
+interface SelectedHome {
+  id: number;
+  name: string;
+  hostId: number;
+  hostName: string | null;
+  neighbourhoodGroup: string | null;
+  neighbourhood: string;
+  latitude: number;
+  longitude: number;
+  roomType: string;
+  price: number | null;
+  minimumNights: number;
+  numberOfReviews: number;
+  lastReview: string | null;
+  reviewsPerMonth: number | null;
+  calculatedHostListingsCount: number;
+  availability365: number;
+  numberOfReviewsLtm: number;
+  license: string | null;
+  reviews?: Review[];
+}
+
 export const Map = ({ accessToken, geoJson }: MapProps) => {
-  const [selectedHome, setSelectedHome] = useState<any>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [isSelectedHomeLoading, setIsSelectedHomeLoading] =
+    useState<boolean>(false);
+  const [selectedHome, setSelectedHome] = useState<SelectedHome | null>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchSelectedHome = async () => {
+      if (selectedId === null) {
+        setSelectedHome(null);
+        return;
+      }
+
+      setIsSelectedHomeLoading(true);
+      try {
+        const response = await fetch(
+          `https://localhost:7297/api/listing/${selectedId}`,
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch home data');
+        }
+        const data: SelectedHome = await response.json();
+        setSelectedHome(data);
+      } catch (error) {
+        console.error('Error fetching selected home:', error);
+      } finally {
+        setIsSelectedHomeLoading(false);
+      }
+    };
+
+    fetchSelectedHome();
+  }, [selectedId]);
 
   return (
     <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
@@ -41,8 +109,8 @@ export const Map = ({ accessToken, geoJson }: MapProps) => {
           interactiveLayerIds={['homes-layer']}
           onClick={(e) => {
             const feature = e.features?.[0];
-            if (feature) {
-              setSelectedHome(feature.properties);
+            if (feature && feature.properties) {
+              setSelectedId(feature.properties.id);
               setDrawerOpen(true);
             }
           }}
@@ -68,18 +136,51 @@ export const Map = ({ accessToken, geoJson }: MapProps) => {
       </div>
 
       <DrawerContent side="bottom">
-        {selectedHome ? (
+        {!isSelectedHomeLoading ? (
           <DrawerHeader className="p-4">
             <DrawerTitle className="text-lg font-bold">
-              Home {selectedHome.id}
+              Home {selectedHome?.name}
             </DrawerTitle>
-            {/* <p>Type: {selectedHome.roomType}</p>
-            <p>Price: ${selectedHome.price}</p>
-            <p>Neighbourhood: {selectedHome.neighbourhood}</p> */}
+
+            <p>Type: {selectedHome?.roomType}</p>
+            <p>Price: ${selectedHome?.price || 'Unknown'}</p>
+            <p>Neighbourhood: {selectedHome?.neighbourhood}</p>
+            <p>Host: {selectedHome?.hostName || 'Unknown'}</p>
+            <p>Number of Reviews: {selectedHome?.numberOfReviews}</p>
+            <p>Last Review: {selectedHome?.lastReview || 'N/A'}</p>
+            <p>Availability: {selectedHome?.availability365} days</p>
+            <p>Minimum Nights: {selectedHome?.minimumNights}</p>
+            <p>License: {selectedHome?.license || 'N/A'}</p>
+            {selectedHome?.reviews && (
+              <Accordion type="single" collapsible>
+                <AccordionItem value="reviews">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Reviews ({selectedHome?.numberOfReviews})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ScrollArea className="flex h-[500px] w-full flex-col p-4">
+                      {selectedHome?.reviews?.length ? (
+                        selectedHome.reviews.map((review) => (
+                          <div key={review.id} className="mb-2">
+                            <p>
+                              <strong>{review.reviewerName}</strong> on{' '}
+                              {new Date(review.date).toLocaleDateString()}:
+                            </p>
+                            <p className="pl-4">{review.comments}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No reviews available.</p>
+                      )}
+                    </ScrollArea>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
           </DrawerHeader>
         ) : (
           <DrawerHeader className="p-4">
-            <DrawerTitle>No home selected</DrawerTitle>
+            <DrawerTitle>Loading home...</DrawerTitle>
           </DrawerHeader>
         )}
         <DrawerFooter>
