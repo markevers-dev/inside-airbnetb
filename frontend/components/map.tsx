@@ -12,6 +12,7 @@ import {
   DrawerContent,
 } from '@/components/ui/8bit/drawer';
 import { Button } from './ui/8bit/button';
+import type { Geometry } from 'geojson';
 
 const MAPBOX_PROPS = {
   longitude: 12.574698976221345,
@@ -21,32 +22,12 @@ const MAPBOX_PROPS = {
 
 interface MapProps {
   accessToken: string;
+  geoJson: Geometry | null;
 }
 
-export const Map = ({ accessToken }: MapProps) => {
-  const [geoJson, setGeoJson] = useState<any>(null);
+export const Map = ({ accessToken, geoJson }: MapProps) => {
   const [selectedHome, setSelectedHome] = useState<any>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  console.log(selectedHome);
-
-  useEffect(() => {
-    const fetchGeoJson = async () => {
-      try {
-        const response = await fetch(
-          'https://localhost:7297/api/listing?pageNumber=1&pageSize=200',
-        );
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setGeoJson(data);
-      } catch (error) {
-        console.error('Error fetching GeoJSON:', error);
-      }
-    };
-    fetchGeoJson();
-  }, []);
 
   return (
     <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>

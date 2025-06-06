@@ -14,12 +14,17 @@ namespace api.Controllers
         private readonly IListingRepository _listingRepository = ListingRepository;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 200)
+        public async Task<IActionResult> GetAllPaged(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 50,
+            [FromQuery] int? minReviews = 0,
+            [FromQuery] string? priceRange = null,
+            [FromQuery] string? neighbourhood = null)
         {
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and size must be greater than zero.");
 
-            var pagedListings = await _genericRepository.GetPagedAsync(pageNumber, pageSize);
+            List<Listing> pagedListings = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
             GeoJsonFeatureCollection geoJson = ConvertToGeoJson(pagedListings);
             return Ok(geoJson);
         }
@@ -27,13 +32,13 @@ namespace api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var listing = await _listingRepository.GetByIdWithReviewsAsync(id);
+            Listing? listing = await _listingRepository.GetByIdWithReviewsAsync(id);
             if (listing == null)
                 return NotFound();
             return Ok(listing);
         }
 
-        private GeoJsonFeatureCollection ConvertToGeoJson(IEnumerable<Listing> listings)
+        private static GeoJsonFeatureCollection ConvertToGeoJson(IEnumerable<Listing> listings)
         {
             var featureCollection = new GeoJsonFeatureCollection
             {

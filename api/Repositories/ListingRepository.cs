@@ -8,17 +8,40 @@ namespace api.Repositories
     {
         private readonly InsideAirbnetbDbContext _context = context;
 
-        public async Task<List<ListingLatLongDto>> GetPagedSummariesAsync(int pageNumber, int pageSize)
+        public async Task<List<Listing>> GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
         {
-            var listings = await _context.Listings//.AsNoTracking()
+            var query = _context.Listings.AsQueryable();
+
+            if (minReviews > 0)
+                query = query.Where(l => l.NumberOfReviews >= minReviews.Value);
+
+            if (!string.IsNullOrEmpty(priceRange))
+            {
+                var parts = priceRange.Split('-');
+                if (parts.Length == 2 &&
+                    int.TryParse(parts[0], out int minPrice) &&
+                    int.TryParse(parts[1], out int maxPrice))
+                {
+                    query = query.Where(l => l.Price.HasValue && l.Price >= minPrice && l.Price <= maxPrice);
+                }
+                else if (priceRange == "750+")
+                {
+                    query = query.Where(l => l.Price.HasValue && l.Price > 750);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(neighbourhood))
+                query = query.Where(l => l.Neighbourhood == neighbourhood);
+
+            var listings = await query // Improvement: Add .AsNoTracking() 
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(l => new ListingLatLongDto
-                {
-                    Id = l.Id,
-                    Latitude = l.Latitude,
-                    Longitude = l.Longitude
-                })
+                //.Select(l => new ListingLatLongDto
+                //{
+                //    Id = l.Id,
+                //    Latitude = l.Latitude,
+                //    Longitude = l.Longitude
+                //}) Improvement: Use DTO projection
                 .ToListAsync();
             return listings;
         }
