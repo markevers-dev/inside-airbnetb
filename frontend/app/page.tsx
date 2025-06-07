@@ -27,16 +27,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/8bit/pagination';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/8bit/alert';
 
 const PAGE_SIZE = '50';
-
-const MOCK_NEIGHBOURHOODS = [
-  'Amager st',
-  'Amager Vest',
-  'Bispebjerg',
-  'Brnshj-Husum',
-  'Frederiksberg',
-];
 
 const PRICE_RANGES = [
   null,
@@ -60,10 +57,12 @@ const Home = () => {
   const [geoJson, setGeoJson] = useState<Geometry | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [neighbourhoods, setNeighbourhoods] = useState<string[]>([]);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNeighbourhoods = async () => {
       try {
+        setFetchError(null);
         const response = await fetch(
           'https://localhost:7297/api/neighbourhood',
         );
@@ -79,7 +78,8 @@ const Home = () => {
         );
         setNeighbourhoods(neighbourhoodNames);
       } catch (error) {
-        console.error('Error fetching neighbourhoods:', error);
+        if (fetchError != null) return;
+        setFetchError('An error occurred while fetching map data.');
       }
     };
     fetchNeighbourhoods();
@@ -88,6 +88,7 @@ const Home = () => {
   useEffect(() => {
     const fetchGeoJson = async () => {
       try {
+        setFetchError(null);
         const queryParams = new URLSearchParams({
           pageNumber: pageNumber.toString(),
           pageSize: PAGE_SIZE,
@@ -108,7 +109,8 @@ const Home = () => {
         const data = await response.json();
         setGeoJson(data);
       } catch (error) {
-        console.error('Error fetching GeoJSON:', error);
+        if (fetchError != null) return;
+        setFetchError('An error occurred while fetching map data.');
       }
     };
     fetchGeoJson();
@@ -126,6 +128,15 @@ const Home = () => {
         </CardHeader>
 
         <CardContent className="flex flex-col space-y-8">
+          {fetchError && (
+            <Alert>
+              <AlertTitle className="font-bold text-red-500">
+                {fetchError}
+              </AlertTitle>
+              <AlertDescription>Please try again later.</AlertDescription>
+            </Alert>
+          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
