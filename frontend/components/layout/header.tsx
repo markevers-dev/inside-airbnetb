@@ -10,16 +10,13 @@ import {
 } from '../ui/8bit/dropdown-menu';
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from '@/components/ui/8bit/navigation-menu';
 import { useUser } from '@auth0/nextjs-auth0';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/8bit/avatar';
+import Link from 'next/link';
 
 interface HeaderProps {
   roles: string[];
@@ -30,9 +27,11 @@ export const Header = ({ roles }: HeaderProps) => {
 
   return (
     <header className="flex w-full flex-col items-center justify-between border-b-[0.5px] border-slate-950/10 bg-slate-100 px-8 py-4 text-slate-950 max-md:space-y-4 md:flex-row md:px-20">
-      <BlurReveal className="font-[family-name:var(--font-geist-mono)] text-2xl font-bold md:text-3xl">
-        Inside Airbnetb
-      </BlurReveal>
+      <Link href="/">
+        <BlurReveal className="font-[family-name:var(--font-geist-mono)] text-2xl font-bold md:text-3xl">
+          Inside Airbnetb
+        </BlurReveal>
+      </Link>
 
       {roles.find((role) => role === 'Admin') && (
         <NavigationMenu>
