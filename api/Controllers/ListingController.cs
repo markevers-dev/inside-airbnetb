@@ -47,7 +47,7 @@ namespace api.Controllers
             return Ok(listing);
         }
 
-        private static GeoJsonFeatureCollection ConvertToGeoJson(IEnumerable<Listing> listings)
+        private static GeoJsonFeatureCollection ConvertToGeoJson(List<ListingLatLongDto> listings)
         {
             var featureCollection = new GeoJsonFeatureCollection
             {

@@ -13,7 +13,7 @@ class Program
         var listingsScenario = Scenario.Create("Listings Test", async context =>
         {
             var pageNumber = Random.Shared.Next(1, 50);
-            var request = Http.CreateRequest("GET", $"https://localhost:7297/api/listing?pageNumber={pageNumber}&pageSize=5000")
+            var request = Http.CreateRequest("GET", $"https://localhost:7297/api/listing?pageNumber={pageNumber}&pageSize=25000")
                     .WithHeader("Accept", "application/json");
 
             return await Http.Send(httpClient, request);
