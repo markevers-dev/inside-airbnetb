@@ -33,7 +33,7 @@ import {
   AlertTitle,
 } from '@/components/ui/8bit/alert';
 
-const PAGE_SIZE = '50';
+const PAGE_SIZE = '200';
 
 const PRICE_RANGES = [
   null,
@@ -58,6 +58,7 @@ const Home = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [neighbourhoods, setNeighbourhoods] = useState<string[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [maxPageCount, setMaxPageCount] = useState<number>(1);
 
   useEffect(() => {
     const fetchNeighbourhoods = async () => {
@@ -107,7 +108,8 @@ const Home = () => {
           );
         }
         const data = await response.json();
-        setGeoJson(data);
+        setGeoJson(data.features);
+        setMaxPageCount(data.totalPages);
       } catch (error) {
         if (fetchError != null) return;
         setFetchError('An error occurred while fetching map data.');
@@ -153,7 +155,10 @@ const Home = () => {
               <DropdownMenuGroup>
                 {selectedNeighbourhood !== null && (
                   <DropdownMenuItem
-                    onClick={() => setSelectedNeighbourhood(null)}
+                    onClick={() => {
+                      setSelectedNeighbourhood(null);
+                      setPageNumber(1);
+                    }}
                   >
                     Reset
                   </DropdownMenuItem>
@@ -161,7 +166,10 @@ const Home = () => {
                 {neighbourhoods?.map((neighbourhood) => (
                   <DropdownMenuItem
                     key={neighbourhood}
-                    onClick={() => setSelectedNeighbourhood(neighbourhood)}
+                    onClick={() => {
+                      setSelectedNeighbourhood(neighbourhood);
+                      setPageNumber(1);
+                    }}
                   >
                     {neighbourhood}
                   </DropdownMenuItem>
@@ -169,22 +177,57 @@ const Home = () => {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <Pagination>
-            <PaginationContent>
+          <Pagination>
+            <PaginationContent className="!flex !w-full !flex-row !items-center !justify-center !gap-x-4 sm:!gap-x-20">
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (pageNumber > 1) setPageNumber((prev) => prev - 1);
+                  }}
+                  className={
+                    pageNumber === 1 ? 'pointer-events-none opacity-50' : ''
+                  }
+                />
+              </PaginationItem>
+              {pageNumber > 1 && (
+                <PaginationItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (pageNumber > 1) setPageNumber((prev) => prev - 1);
+                  }}
+                >
+                  <PaginationLink href="#">{pageNumber - 1}</PaginationLink>
+                </PaginationItem>
+              )}
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  {pageNumber}
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPageNumber((prev) => prev + 1);
+                  }}
+                >
+                  {pageNumber + 1}
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPageNumber((prev) => prev + 1);
+                  }}
+                />
               </PaginationItem>
             </PaginationContent>
-          </Pagination> */}
+          </Pagination>
           <Map
             accessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? ''}
             geoJson={geoJson}
@@ -206,7 +249,12 @@ const Home = () => {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuGroup>
                   {priceRange !== null && (
-                    <DropdownMenuItem onClick={() => setPriceRange(null)}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setPriceRange(null);
+                        setPageNumber(1);
+                      }}
+                    >
                       Reset
                     </DropdownMenuItem>
                   )}
@@ -214,7 +262,10 @@ const Home = () => {
                     (range) => (
                       <DropdownMenuItem
                         key={range}
-                        onClick={() => setPriceRange(range)}
+                        onClick={() => {
+                          setPriceRange(range);
+                          setPageNumber(1);
+                        }}
                       >
                         {range}
                       </DropdownMenuItem>
@@ -239,14 +290,22 @@ const Home = () => {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuGroup>
                   {numberOfReviews !== 0 && (
-                    <DropdownMenuItem onClick={() => setNumberOfReviews(0)}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setNumberOfReviews(0);
+                        setPageNumber(1);
+                      }}
+                    >
                       Reset
                     </DropdownMenuItem>
                   )}
                   {NUM_OF_REVIEWS.map((num) => (
                     <DropdownMenuItem
                       key={num}
-                      onClick={() => setNumberOfReviews(num)}
+                      onClick={() => {
+                        setNumberOfReviews(num);
+                        setPageNumber(1);
+                      }}
                     >
                       {num}+
                     </DropdownMenuItem>

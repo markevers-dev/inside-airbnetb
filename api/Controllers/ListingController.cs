@@ -24,9 +24,18 @@ namespace api.Controllers
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and size must be greater than zero.");
 
-            List<Listing> pagedListings = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
-            GeoJsonFeatureCollection geoJson = ConvertToGeoJson(pagedListings);
-            return Ok(geoJson);
+            var(listings, totalCount) = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
+            GeoJsonFeatureCollection geoJson = ConvertToGeoJson(listings);
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var result = new PagedGeoJsonDto
+            {
+                Features = geoJson,
+                TotalPages = totalPages,
+                TotalCount = totalCount
+            };
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

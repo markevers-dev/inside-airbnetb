@@ -185,14 +185,15 @@ export const Map = ({
         {!isSelectedHomeLoading ? (
           <DrawerHeader className="p-4">
             <DrawerTitle className="text-lg font-bold">
-              Home {selectedHome?.name}
+              {selectedHome?.name}
             </DrawerTitle>
 
             <p>Type: {selectedHome?.roomType}</p>
             <p>Price: ${selectedHome?.price || 'Unknown'}</p>
             <p>Neighbourhood: {selectedHome?.neighbourhood}</p>
-            <p>Host: {selectedHome?.hostName || 'Unknown'}</p>
-            <p>Number of Reviews: {selectedHome?.numberOfReviews}</p>
+            <p>
+              {'Host\(s\)'}: {selectedHome?.hostName || 'Unknown'}
+            </p>
             <p>Last Review: {selectedHome?.lastReview || 'N/A'}</p>
             <p>Availability: {selectedHome?.availability365} days</p>
             <p>Minimum Nights: {selectedHome?.minimumNights}</p>

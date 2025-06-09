@@ -8,7 +8,7 @@ namespace api.Repositories
     {
         private readonly InsideAirbnetbDbContext _context = context;
 
-        public async Task<List<Listing>> GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
+        public async Task<(List<Listing> Listings, int TotalCount)> GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
         {
             var query = _context.Listings.AsQueryable();
 
@@ -33,6 +33,8 @@ namespace api.Repositories
             if (!string.IsNullOrWhiteSpace(neighbourhood))
                 query = query.Where(l => l.Neighbourhood == neighbourhood);
 
+            var totalCount = query.Count(); // Improvement: Await
+
             var listings = await query // Improvement: Add .AsNoTracking() 
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -43,7 +45,7 @@ namespace api.Repositories
                 //    Longitude = l.Longitude
                 //}) Improvement: Use DTO projection
                 .ToListAsync();
-            return listings;
+            return (listings, totalCount);
         }
 
         public async Task<Listing?> GetByIdWithReviewsAsync(long id)
