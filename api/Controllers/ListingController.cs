@@ -14,7 +14,7 @@ namespace api.Controllers
         private readonly IListingRepository _listingRepository = ListingRepository;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPaged(
+        public IActionResult GetAllPaged(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50,
             [FromQuery] int? minReviews = 0,
@@ -24,7 +24,7 @@ namespace api.Controllers
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and size must be greater than zero.");
 
-            var(listings, totalCount) = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
+            var(listings, totalCount) = _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
             GeoJsonFeatureCollection geoJson = ConvertToGeoJson(listings);
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
@@ -39,9 +39,9 @@ namespace api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(long id)
+        public IActionResult GetById(long id)
         {
-            Listing? listing = await _listingRepository.GetByIdWithReviewsAsync(id);
+            Listing? listing = _listingRepository.GetByIdWithReviewsAsync(id);
             if (listing == null)
                 return NotFound();
             return Ok(listing);
