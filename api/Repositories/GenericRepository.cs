@@ -23,7 +23,6 @@ namespace api.Repositories
         public async Task<T> GetByIdAsync(long id)
         {
             var entity = await _dbSet.FindAsync(id);
-            // TODO: Return not found exception when not found, handle it in controller (like in Spotitube)
             return entity!;
         }
 

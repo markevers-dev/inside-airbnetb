@@ -13,9 +13,9 @@ namespace api.Controllers
         private readonly IGenericRepository<Review> _reviewRepository = reviewRepository;
 
         [HttpGet("average-price-per-neighbourhood")]
-        public IActionResult GetAveragePricePerNeighbourhood()
+        public async Task<IActionResult> GetAveragePricePerNeighbourhood()
         {
-            var result = _listingRepository.GetQueryableAsync()
+            var result = await _listingRepository.GetQueryableAsync()
                 .Where(l => l.Price.HasValue)
                 .GroupBy(l => l.Neighbourhood)
                 .Select(g => new
@@ -24,15 +24,15 @@ namespace api.Controllers
                     AveragePrice = g.Average(l => l.Price!.Value)
                 })
                 .OrderByDescending(x => x.AveragePrice)
-                .ToList();
+                .ToListAsync();
 
             return Ok(result);
         }
 
         [HttpGet("active-listings-per-neighbourhood")]
-        public IActionResult GetActiveListingsPerNeighbourhood()
+        public async Task<IActionResult> GetActiveListingsPerNeighbourhood()
         {
-            var result = _listingRepository.GetQueryableAsync()
+            var result = await _listingRepository.GetQueryableAsync()
                 .Where(l => l.Availability365 > 0)
                 .GroupBy(l => l.Neighbourhood)
                 .Select(g => new
@@ -41,13 +41,13 @@ namespace api.Controllers
                     ActiveCount = g.Count()
                 })
                 .OrderByDescending(x => x.ActiveCount)
-                .ToList();
+                .ToListAsync();
 
             return Ok(result);
         }
 
         [HttpGet("reviews-per-month")]
-        public IActionResult GetReviewsPerMonth()
+        public async Task<IActionResult> GetReviewsPerMonth()
         {
             var result = _reviewRepository.GetQueryableAsync()
                 .GroupBy(r => new { r.Date.Year, r.Date.Month })
@@ -68,9 +68,9 @@ namespace api.Controllers
         }
 
         [HttpGet("average-reviews-per-month-per-neighbourhood")]
-        public IActionResult GetAverageReviewsPerMonthPerNeighbourhood()
+        public async Task<IActionResult> GetAverageReviewsPerMonthPerNeighbourhood()
         {
-            var result = _listingRepository.GetQueryableAsync()
+            var result = await _listingRepository.GetQueryableAsync()
                 .Where(l => l.ReviewsPerMonth.HasValue)
                 .GroupBy(l => l.Neighbourhood)
                 .Select(g => new
@@ -79,22 +79,22 @@ namespace api.Controllers
                     AvgReviewsPerMonth = g.Average(l => l.ReviewsPerMonth!.Value)
                 })
                 .OrderByDescending(x => x.AvgReviewsPerMonth)
-                .ToList();
+                .ToListAsync();
 
             return Ok(result);
         }
 
         [HttpGet("room-types")]
-        public IActionResult GetRoomTypeDistribution()
+        public async Task<IActionResult> GetRoomTypeDistribution()
         {
-            var result = _listingRepository.GetQueryableAsync()
+            var result = await _listingRepository.GetQueryableAsync()
                 .GroupBy(l => l.RoomType)
                 .Select(g => new
                 {
                     RoomType = g.Key,
                     Count = g.Count()
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(result);
         }
