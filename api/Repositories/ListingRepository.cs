@@ -8,9 +8,9 @@ namespace api.Repositories
     {
         private readonly InsideAirbnetbDbContext _context = context;
 
-        public (List<ListingLatLongDto> Listings, int TotalCount) GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
+        public async Task<(List<ListingLatLongDto> Listings, int TotalCount)> GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
         {
-            var query = _context.Listings.AsQueryable();
+            IQueryable<Listing> query = _context.Listings.AsQueryable();
 
             if (minReviews > 0)
                 query = query.Where(l => l.NumberOfReviews >= minReviews.Value);
@@ -33,9 +33,9 @@ namespace api.Repositories
             if (!string.IsNullOrWhiteSpace(neighbourhood))
                 query = query.Where(l => l.Neighbourhood == neighbourhood);
 
-            var totalCount = query.Count(); // Improvement: Await
+            int totalCount = await query.CountAsync();
 
-            var listings = query
+            List<ListingLatLongDto> listings = await query
                 .AsNoTracking()
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -45,16 +45,16 @@ namespace api.Repositories
                     Latitude = l.Latitude,
                     Longitude = l.Longitude
                 })
-                .ToList();
+                .ToListAsync();
             return (listings, totalCount);
         }
 
-        public Listing? GetByIdWithReviewsAsync(long id)
+        public async Task<Listing?> GetByIdWithReviewsAsync(long id)
         {
-            return _context.Listings
+            return await _context.Listings
                 .AsNoTrackingWithIdentityResolution()
                 .Include(l => l.Reviews)
-                .FirstOrDefault(l => l.Id == id);
+                .FirstOrDefaultAsync(l => l.Id == id);
         }
     }
 }
