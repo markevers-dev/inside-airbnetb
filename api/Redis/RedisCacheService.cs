@@ -1,26 +1,27 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using StackExchange.Redis;
 using System.Text.Json;
 
 namespace api.Redis
 {
-    public class RedisCacheService(IDistributedCache cache)
+    public class RedisCacheService(IConnectionMultiplexer mux)
     {
-        private readonly IDistributedCache _cache = cache;
+        private readonly IDatabase _db = mux.GetDatabase();
 
         public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            string? cachedData = await _cache.GetStringAsync(key, cancellationToken);
+            var bytes = await _db.StringGetAsync(key);
 
-            if (string.IsNullOrEmpty(cachedData)) return default;
+            if (!bytes.HasValue)
+                return default;
 
-            T? t = JsonSerializer.Deserialize<T>(cachedData);
-            return t;
+
+            return JsonSerializer.Deserialize<T>(bytes!);
         }
 
         public async Task SetAsync<T>(string key, T data, CancellationToken cancellationToken = default)
         {
             var jsonData = JsonSerializer.Serialize(data);
-            await _cache.SetStringAsync(key, jsonData, cancellationToken);
+            await _db.StringSetAsync(key, jsonData);
         }
     }
 }

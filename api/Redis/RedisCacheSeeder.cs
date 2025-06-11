@@ -16,6 +16,8 @@ namespace api.Redis
 
         public async Task SeedAsync()
         {
+            Console.WriteLine("Seeding Redis cache...");
+
             List<Listing> listings = await _listingRepository.GetAllAsync();
             List<Review> reviews = await _reviewRepository.GetAllAsync();
             List<Neighbourhood> neighbourhoods = await _neighbourhoodRepository.GetAllAsync();
@@ -25,18 +27,21 @@ namespace api.Redis
                 string key = $"listing:{listing.Id}";
                 await _cacheService.SetAsync(key, listing);
             }
+            await _cacheService.SetAsync("listings:all", listings);
 
             foreach (var review in reviews)
             {
                 string key = $"review:{review.Id}";
                 await _cacheService.SetAsync(key, review);
             }
+            await _cacheService.SetAsync("reviews:all", reviews);
 
             foreach (var neighbourhood in neighbourhoods)
             {
                 string key = $"neighbourhood:{neighbourhood.Neighbourhood1}";
                 await _cacheService.SetAsync(key, neighbourhood);
             }
+            await _cacheService.SetAsync("neighbourhoods:all", neighbourhoods);
         }
     }
 }

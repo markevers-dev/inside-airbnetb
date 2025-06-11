@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using StackExchange.Redis;
 
 string AllowedOrigins = "AllowedOrigin";
 
@@ -53,14 +54,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+System.Diagnostics.Debug.WriteLine(builder.Configuration.GetConnectionString("Redis"));
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "Inside-Airbnetb-Redis-Cache";
-});
-//builder.Services.AddScoped<RedisCacheService>();
-//builder.Services.AddScoped<RedisCacheSeeder>();
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+//});
+builder.Services.AddScoped<RedisCacheService>();
+builder.Services.AddScoped<RedisCacheSeeder>();
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
@@ -78,11 +82,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-//    await seeder.SeedAsync();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.UseCors(AllowedOrigins);
 
