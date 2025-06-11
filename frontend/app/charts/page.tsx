@@ -24,14 +24,19 @@ const Charts = async () => {
 
   if (!roles.includes('Admin')) unauthorized();
 
-  const averagePricePerNeighbourhoodData =
-    await createAveragePricePerNeighbourhoodData();
-  const activeListingsPerNeighbourhoodData =
-    await createActiveListingsPerNeighbourhoodData();
-  const reviewsPerMonthData = await createReviewsPerMonthData();
-  const averageReviewsPerMonthPerNeighbourhoodData =
-    await createAverageReviewsPerMonthPerNeighbourhoodData();
-  const roomTypesData = await createRoomTypesData();
+  const [
+    averagePricePerNeighbourhoodData,
+    activeListingsPerNeighbourhoodData,
+    reviewsPerMonthData,
+    averageReviewsPerMonthPerNeighbourhoodData,
+    roomTypesData,
+  ] = await Promise.all([
+    createAveragePricePerNeighbourhoodData(),
+    createActiveListingsPerNeighbourhoodData(),
+    createReviewsPerMonthData(),
+    createAverageReviewsPerMonthPerNeighbourhoodData(),
+    createRoomTypesData(),
+  ]);
 
   const commonOptions = {
     responsive: true,

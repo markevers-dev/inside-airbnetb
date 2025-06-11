@@ -7,6 +7,7 @@ import {
   fetchActiveListingsPerNeighbourhood,
   fetchRoomTypes,
 } from '@/queries/charts';
+import { auth0 } from './auth0';
 
 /**
  * Generates chart data for average price per neighbourhood.
@@ -18,8 +19,11 @@ export const createAveragePricePerNeighbourhoodData = async (): Promise<{
   labels: string[];
   datasets: any[];
 }> => {
-  const averagePricePerNeighbourhood =
-    await fetchAveragePricePerNeighbourhood();
+  const accessToken = await auth0.getAccessToken();
+  if (!accessToken) throw new Error('No access token found');
+  const averagePricePerNeighbourhood = await fetchAveragePricePerNeighbourhood(
+    accessToken.token,
+  );
   return {
     labels: averagePricePerNeighbourhood.map(
       (item: { neighbourhood: string }) => item.neighbourhood,
@@ -50,8 +54,10 @@ export const createActiveListingsPerNeighbourhoodData = async (): Promise<{
   labels: string[];
   datasets: any[];
 }> => {
+  const accessToken = await auth0.getAccessToken();
+  if (!accessToken) throw new Error('No access token found');
   const activeListingsPerNeighbourhood =
-    await fetchActiveListingsPerNeighbourhood();
+    await fetchActiveListingsPerNeighbourhood(accessToken.token);
   return {
     labels: activeListingsPerNeighbourhood.map(
       (item: { neighbourhood: string }) => item.neighbourhood,
@@ -82,7 +88,9 @@ export const createReviewsPerMonthData = async (): Promise<{
   labels: string[];
   datasets: any[];
 }> => {
-  const reviewsPerMonth = await fetchReviewsPerMonth();
+  const accessToken = await auth0.getAccessToken();
+  if (!accessToken) throw new Error('No access token found');
+  const reviewsPerMonth = await fetchReviewsPerMonth(accessToken.token);
   return {
     labels: reviewsPerMonth.map((item: { month: string }) => item.month),
     datasets: [
@@ -108,8 +116,10 @@ export const createReviewsPerMonthData = async (): Promise<{
  */
 export const createAverageReviewsPerMonthPerNeighbourhoodData =
   async (): Promise<{ labels: string[]; datasets: any[] }> => {
+    const accessToken = await auth0.getAccessToken();
+    if (!accessToken) throw new Error('No access token found');
     const averageReviewsPerMonthPerNeighbourhood =
-      await fetchAverageReviewsPerMonthPerNeighbourhood();
+      await fetchAverageReviewsPerMonthPerNeighbourhood(accessToken.token);
 
     return {
       labels: averageReviewsPerMonthPerNeighbourhood.map(
@@ -131,7 +141,6 @@ export const createAverageReviewsPerMonthPerNeighbourhoodData =
     };
   };
 
-const roomTypes = await fetchRoomTypes();
 /**
  * Generates chart data for room types.
  * Fetches room types data and formats it for charting libraries.
@@ -142,7 +151,9 @@ export const createRoomTypesData = async (): Promise<{
   labels: string[];
   datasets: any[];
 }> => {
-  const roomTypes = await fetchRoomTypes();
+  const accessToken = await auth0.getAccessToken();
+  if (!accessToken) throw new Error('No access token found');
+  const roomTypes = await fetchRoomTypes(accessToken.token);
   return {
     labels: roomTypes.map((item: { roomType: string }) => item.roomType),
     datasets: [

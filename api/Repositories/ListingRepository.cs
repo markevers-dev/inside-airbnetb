@@ -41,7 +41,7 @@ namespace api.Repositories
                 .Take(pageSize)
                 .Select(l => new ListingLatLongDto
                 {
-                    Id = l.Id,
+                    Id = l.Id.ToString(),
                     Latitude = l.Latitude,
                     Longitude = l.Longitude
                 })

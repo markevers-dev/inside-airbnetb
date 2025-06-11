@@ -80,9 +80,9 @@ export const Map = ({
   useEffect(() => {
     const fetchSelectedHome = async () => {
       if (selectedId === null) {
-        setSelectedHome(null);
         return;
       }
+      setSelectedHome(null);
 
       setIsSelectedHomeLoading(true);
       try {
@@ -90,7 +90,7 @@ export const Map = ({
           `https://localhost:7297/api/listing/${selectedId}`,
         );
         if (!response.ok) {
-          throw new Error('Failed to fetch home data');
+          throw new Error('Failed to fetch home data: ' + response.statusText);
         }
         const data: SelectedHome = await response.json();
         setSelectedHome(data);
@@ -116,7 +116,9 @@ export const Map = ({
           `https://localhost:7297/api/neighbourhood/${selectedNeighbourhood}`,
         );
         if (!response.ok) {
-          throw new Error('Failed to fetch neighbourhood data');
+          throw new Error(
+            'Failed to fetch neighbourhood data: ' + response.statusText,
+          );
         }
         const data: Geometry = await response.json();
         setNeighbourhoodGeoJson(data);

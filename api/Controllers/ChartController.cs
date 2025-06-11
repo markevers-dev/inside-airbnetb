@@ -1,10 +1,12 @@
 ﻿using api.Models;
 using api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class ChartController(IGenericRepository<Listing> listingRepository, IGenericRepository<Review> reviewRepository) : ControllerBase
