@@ -54,10 +54,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-System.Diagnostics.Debug.WriteLine(builder.Configuration.GetConnectionString("Redis"));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
 
 //builder.Services.AddStackExchangeRedisCache(options =>
 //{
@@ -91,6 +95,8 @@ using (var scope = app.Services.CreateScope())
 app.UseCors(AllowedOrigins);
 
 app.UseHttpsRedirection();
+
+app.UseResponseCompression();
 
 app.UseAuthentication();
 

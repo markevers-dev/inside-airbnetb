@@ -6,11 +6,10 @@ services:
       - redis_data:/data
     ports:
       - "6379:6379"
-    command: ["redis-server", "--save", "", "--appendonly", "no"]
     deploy:
       resources:
         limits:
-          memory: 3072M
+          memory: 6144M
           cpus: "2.0"
 
 volumes:

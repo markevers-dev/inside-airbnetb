@@ -11,8 +11,8 @@ namespace api.Controllers
     [ApiController]
     public class ListingController(IGenericRepository<Listing> GenericRepository, IListingRepository ListingRepository) : ControllerBase
     {
-        private readonly IGenericRepository<Listing> _genericRepository = GenericRepository;
         private readonly IListingRepository _listingRepository = ListingRepository;
+        private readonly int chunkSize = 10000;
 
         [HttpGet]
         public async Task<IActionResult> GetAllPaged(
@@ -27,89 +27,115 @@ namespace api.Controllers
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and size must be greater than zero.");
 
-            List<Listing>? cachedListings = await cacheService.GetAsync<List<Listing>>("listings:all");
-            System.Diagnostics.Debug.WriteLine($"Cached listings count: {cachedListings?.Count ?? 0}");
+            int from = (pageNumber - 1) * pageSize;
+            int to = from + pageSize;
+            int chunkIndex = 0;
+            int totalMatched = 0;
 
-            if (cachedListings is not null)
+            List<Listing> matched = [];
+
+            int? minPrice = null;
+            int? maxPrice = null;
+
+            if (!string.IsNullOrWhiteSpace(priceRange))
             {
-                System.Diagnostics.Debug.WriteLine("Using cached listings.");
-                IEnumerable<Listing> filtered = cachedListings;
-
-                if (minReviews > 0)
-                    filtered = filtered.Where(l => l.NumberOfReviews >= minReviews);
-
-                if (!string.IsNullOrEmpty(priceRange))
+                var parts = priceRange.Split('-');
+                if (parts.Length == 2 &&
+                    int.TryParse(parts[0], out int parsedMin) &&
+                    int.TryParse(parts[1], out int parsedMax))
                 {
-                    var parts = priceRange.Split('-');
-                    if (parts.Length == 2 &&
-                        int.TryParse(parts[0], out int minPrice) &&
-                        int.TryParse(parts[1], out int maxPrice))
-                    {
-                        filtered = filtered.Where(l => l.Price.HasValue && l.Price >= minPrice && l.Price <= maxPrice);
-                    }
-                    else if (priceRange == "750+")
-                    {
-                        filtered = filtered.Where(l => l.Price.HasValue && l.Price > 750);
-                    }
+                    minPrice = parsedMin;
+                    maxPrice = parsedMax;
                 }
-
-                if (!string.IsNullOrWhiteSpace(neighbourhood))
-                    filtered = filtered.Where(l => l.Neighbourhood == neighbourhood);
-
-                int totalCachedCount = filtered.Count();
-
-                var paged = filtered
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(l => new ListingLatLongDto
-                    {
-                        Id = l.Id.ToString(),
-                        Latitude = l.Latitude,
-                        Longitude = l.Longitude
-                    })
-                    .ToList();
-
-                GeoJsonFeatureCollection cachedGeoJson = ConvertToGeoJson(paged);
-
-                PagedGeoJsonDto cachedResult = new()
+                else if (priceRange == "750+")
                 {
-                    Features = cachedGeoJson,
-                    TotalPages = (int)Math.Ceiling(totalCachedCount / (double)pageSize),
-                    TotalCount = totalCachedCount
-                };
-
-                return Ok(cachedResult);
+                    minPrice = 750;
+                }
             }
 
-            var (listings, totalCount) = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
-            GeoJsonFeatureCollection geoJson = ConvertToGeoJson(listings);
-            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-            PagedGeoJsonDto result = new()
+            while (matched.Count < to)
             {
-                Features = geoJson,
-                TotalPages = totalPages,
-                TotalCount = totalCount
+                var chunk = await cacheService.GetAsync<List<Listing>>($"listings:{chunkIndex}");
+                if (chunk is null || chunk.Count == 0)
+                    break;
+
+                foreach (var listing in chunk)
+                {
+                    if (minReviews.HasValue && listing.NumberOfReviews < minReviews.Value)
+                        continue;
+
+                    if (!string.IsNullOrWhiteSpace(neighbourhood) && listing.Neighbourhood != neighbourhood)
+                        continue;
+
+                    if (priceRange is not null)
+                    {
+                        if (!listing.Price.HasValue)
+                            continue;
+
+                        if (maxPrice == null)
+                        {
+                            if (listing.Price <= minPrice)
+                                continue;
+                        }
+                        else
+                        {
+                            if (listing.Price < minPrice || listing.Price > maxPrice)
+                                continue;
+                        }
+                    }
+
+                    if (totalMatched >= from && matched.Count < pageSize)
+                        matched.Add(listing);
+
+                    totalMatched++;
+
+                    if (matched.Count == pageSize)
+                        break;
+                }
+
+                chunkIndex++;
+            }
+
+            if (matched.Count > 0)
+            {
+                var geoJson = ConvertToGeoJson(matched.Select(l => new ListingLatLongDto
+                {
+                    Id = l.Id.ToString(),
+                    Latitude = l.Latitude,
+                    Longitude = l.Longitude
+                }).ToList());
+
+                var redisResult = new PagedGeoJsonDto
+                {
+                    Features = geoJson,
+                    TotalCount = totalMatched,
+                    TotalPages = (int)Math.Ceiling((double)totalMatched / pageSize)
+                };
+
+                return Ok(redisResult);
+            }
+
+            var (dbListings, dbCount) = await _listingRepository.GetPagedSummariesAsync(minReviews, priceRange, neighbourhood, pageNumber, pageSize);
+            var dbGeoJson = ConvertToGeoJson(dbListings.Select(l => new ListingLatLongDto
+            {
+                Id = l.Id.ToString(),
+                Latitude = l.Latitude,
+                Longitude = l.Longitude
+            }).ToList());
+
+            var dbResult = new PagedGeoJsonDto
+            {
+                Features = dbGeoJson,
+                TotalCount = dbCount,
+                TotalPages = (int)Math.Ceiling((double)dbCount / pageSize)
             };
 
-            return Ok(result);
+            return Ok(dbResult);
         }
 
         [HttpGet("{id:long}")]
-        public async Task<IActionResult> GetById(long id,
-            [FromServices] RedisCacheService cacheService
-            )
+        public async Task<IActionResult> GetById(long id)
         {
-            if (id <= 0)
-                return BadRequest("Invalid listing ID.");
-            string cacheKey = $"listing:{id}";
-            Listing? cachedListing = await cacheService.GetAsync<Listing>(cacheKey);
-            if (cachedListing != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Using cached listing.");
-                return Ok(cachedListing);
-            }
-
             Listing? listing = await _listingRepository.GetByIdWithReviewsAsync(id);
             if (listing == null)
                 return NotFound();

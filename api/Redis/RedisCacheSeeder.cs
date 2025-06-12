@@ -1,47 +1,28 @@
-﻿using api.Models;
+﻿using System.Runtime.CompilerServices;
+using api.Models;
 using api.Repositories;
 
 namespace api.Redis
 {
     public class RedisCacheSeeder(
             IGenericRepository<Listing> listingRepository,
-            IGenericRepository<Review> reviewRepository,
-            IGenericRepository<Neighbourhood> neighbourhoodRepository,
             RedisCacheService cacheService)
     {
         private readonly IGenericRepository<Listing> _listingRepository = listingRepository;
-        private readonly IGenericRepository<Review> _reviewRepository = reviewRepository;
-        private readonly IGenericRepository<Neighbourhood> _neighbourhoodRepository = neighbourhoodRepository;
         private readonly RedisCacheService _cacheService = cacheService;
+        private readonly int chunkSize = 500;
 
         public async Task SeedAsync()
         {
-            Console.WriteLine("Seeding Redis cache...");
-
+            int index = 0;
             List<Listing> listings = await _listingRepository.GetAllAsync();
-            List<Review> reviews = await _reviewRepository.GetAllAsync();
-            List<Neighbourhood> neighbourhoods = await _neighbourhoodRepository.GetAllAsync();
 
-            foreach (var listing in listings)
+            for (int i = 0; i < listings.Count; i += chunkSize)
             {
-                string key = $"listing:{listing.Id}";
-                await _cacheService.SetAsync(key, listing);
+                var chunk = listings.Skip(i).Take(chunkSize).ToList();
+                await _cacheService.SetAsync($"listings:{index}", chunk);
+                index++;
             }
-            await _cacheService.SetAsync("listings:all", listings);
-
-            foreach (var review in reviews)
-            {
-                string key = $"review:{review.Id}";
-                await _cacheService.SetAsync(key, review);
-            }
-            await _cacheService.SetAsync("reviews:all", reviews);
-
-            foreach (var neighbourhood in neighbourhoods)
-            {
-                string key = $"neighbourhood:{neighbourhood.Neighbourhood1}";
-                await _cacheService.SetAsync(key, neighbourhood);
-            }
-            await _cacheService.SetAsync("neighbourhoods:all", neighbourhoods);
         }
     }
 }
