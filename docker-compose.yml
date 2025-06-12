@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+          cpus: "2.0"
+
+volumes:
+  redis_data:
