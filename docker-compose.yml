@@ -10,7 +10,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1536M
+          memory: 3072M
           cpus: "2.0"
 
 volumes:
