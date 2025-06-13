@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using api.Models;
+﻿using api.Models;
 using api.Repositories;
 
 namespace api.Redis

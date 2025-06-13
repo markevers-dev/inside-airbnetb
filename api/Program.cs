@@ -50,20 +50,16 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-//    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
 
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
 });
 
-//builder.Services.AddStackExchangeRedisCache(options =>
-//{
-//    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-//});
-//builder.Services.AddScoped<RedisCacheService>();
-//builder.Services.AddScoped<RedisCacheSeeder>();
+builder.Services.AddScoped<RedisCacheService>();
+builder.Services.AddScoped<RedisCacheSeeder>();
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
@@ -81,11 +77,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-//    await seeder.SeedAsync();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.Use(async (context, next) =>
 {
