@@ -3,9 +3,14 @@ using System.Text.Json;
 
 namespace api.Redis
 {
-    public class RedisCacheService(IConnectionMultiplexer mux)
+    public class RedisCacheService
     {
-        private readonly IDatabase _db = mux.GetDatabase();
+        private readonly IDatabase _db;
+
+        public RedisCacheService(IConnectionMultiplexer mux)
+        {
+            _db = mux.GetDatabase();
+        }
 
         public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {

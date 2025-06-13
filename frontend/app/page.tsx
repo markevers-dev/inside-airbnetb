@@ -21,7 +21,6 @@ import type { Geometry } from 'geojson';
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -79,8 +78,8 @@ const Home = () => {
         );
         setNeighbourhoods(neighbourhoodNames);
       } catch (error) {
-        if (fetchError != null) return;
-        setFetchError('An error occurred while fetching map data.');
+        if (process.env.NODE_ENV === 'development') console.error(error);
+        setFetchError('An error occurred while fetching data.');
       }
     };
     fetchNeighbourhoods();
@@ -111,8 +110,8 @@ const Home = () => {
         setGeoJson(data.features);
         setMaxPageCount(data.totalPages);
       } catch (error) {
-        if (fetchError != null) return;
-        setFetchError('An error occurred while fetching map data.');
+        if (process.env.NODE_ENV === 'development') console.error(error);
+        setFetchError('An error occurred while fetching data.');
       }
     };
     fetchGeoJson();
@@ -206,17 +205,20 @@ const Home = () => {
                   {pageNumber}
                 </PaginationLink>
               </PaginationItem>
-              <PaginationItem>
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPageNumber((prev) => prev + 1);
-                  }}
-                >
-                  {pageNumber + 1}
-                </PaginationLink>
-              </PaginationItem>
+              {pageNumber < maxPageCount && (
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPageNumber((prev) => prev + 1);
+                    }}
+                  >
+                    {pageNumber + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              )}
+
               <PaginationItem>
                 <PaginationNext
                   href="#"
@@ -224,6 +226,7 @@ const Home = () => {
                     e.preventDefault();
                     setPageNumber((prev) => prev + 1);
                   }}
+                  {...(pageNumber >= maxPageCount && { disabled: true })}
                 />
               </PaginationItem>
             </PaginationContent>

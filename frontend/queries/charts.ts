@@ -1,7 +1,6 @@
 'use server';
 
 export const fetchAveragePricePerNeighbourhood = async (token: string) => {
-  console.log(token);
   const response = await fetch(
     `${process.env.API_BASE_URL}/chart/average-price-per-neighbourhood`,
     {

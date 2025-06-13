@@ -20,11 +20,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddMiniProfiler(options => options.RouteBasePath = "/profiler").AddEntityFramework();
-}
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -55,8 +50,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+//    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -67,17 +62,17 @@ builder.Services.AddResponseCompression(options =>
 //{
 //    options.Configuration = builder.Configuration.GetConnectionString("Redis");
 //});
-builder.Services.AddScoped<RedisCacheService>();
-builder.Services.AddScoped<RedisCacheSeeder>();
+//builder.Services.AddScoped<RedisCacheService>();
+//builder.Services.AddScoped<RedisCacheSeeder>();
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
+app.UseHsts();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseMiniProfiler();
-
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -86,11 +81,18 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-using (var scope = app.Services.CreateScope())
+//using (var scope = app.Services.CreateScope())
+//{
+//    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+//    await seeder.SeedAsync();
+//}
+
+app.Use(async (context, next) =>
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-    await seeder.SeedAsync();
-}
+    context.Response.Headers.TryAdd("X-Content-Type-Options", "nosniff");
+    context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+    await next();
+});
 
 app.UseCors(AllowedOrigins);
 

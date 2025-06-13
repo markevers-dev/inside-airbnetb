@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace api.Models;
 
@@ -10,7 +8,7 @@ public partial class Review
 
     public long Id { get; set; }
 
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
 
     public int ReviewerId { get; set; }
 

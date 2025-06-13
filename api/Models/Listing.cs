@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace api.Models;
+﻿namespace api.Models;
 
 public partial class Listing
 {
@@ -29,7 +26,7 @@ public partial class Listing
 
     public short NumberOfReviews { get; set; }
 
-    public DateOnly? LastReview { get; set; }
+    public DateTime? LastReview { get; set; }
 
     public double? ReviewsPerMonth { get; set; }
 

@@ -11,7 +11,6 @@
   <ItemGroup>
     <PackageReference Include="NBomber" Version="6.0.2" />
     <PackageReference Include="NBomber.Http" Version="6.0.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.6" />
   </ItemGroup>
 
 </Project>

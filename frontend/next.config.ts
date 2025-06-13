@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
   },
+  poweredByHeader: false,
 };
 
 export default nextConfig;

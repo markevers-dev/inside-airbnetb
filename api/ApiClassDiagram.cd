@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="api.Controllers.ChartController">
+    <Position X="0.75" Y="5.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAASAAAAAAAAAgAAAQAAQAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ChartController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Controllers.ListingController">
+    <Position X="0.75" Y="0.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAIE=</HashCode>
+      <FileName>Controllers\ListingController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Controllers.NeighbourhoodController">
+    <Position X="0.75" Y="3" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AJAAAAAAAgAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\NeighbourhoodController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.GeoJsonFeature">
+    <Position X="9.5" Y="2.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACgAA=</HashCode>
+      <FileName>Dtos\GeoJsonFeature.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.GeoJsonFeatureCollection">
+    <Position X="9.5" Y="4" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dtos\GeoJsonFeatureCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.GeoJsonNHFeature">
+    <Position X="9.5" Y="7" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACgAA=</HashCode>
+      <FileName>Dtos\GeoJsonNHFeature.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.GeoJsonNHFeatureCollection">
+    <Position X="9.5" Y="8.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dtos\GeoJsonNHFeatureCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.Geometry">
+    <Position X="9.5" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dtos\Geometry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.GeometryNH">
+    <Position X="9.5" Y="5.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dtos\GeometryNH.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.ListingLatLongDto">
+    <Position X="9.5" Y="12" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAEAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dtos\ListingLatLongDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Dtos.PagedGeoJsonDto">
+    <Position X="9.5" Y="10.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dtos\PagedGeoJsonDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Repositories.GenericRepository&lt;T&gt;">
+    <Position X="4.5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAgAAAABAAAAAAAIAEAAAAAAAgAAAAAABAAIIA=</HashCode>
+      <FileName>Repositories\GenericRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="api.Repositories.ListingRepository">
+    <Position X="4.5" Y="8.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Repositories\ListingRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="api.Models.Listing">
+    <Position X="7" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>gCACAEAAAUAAAAAAAAEIAAUAAAAAAAAAJAAAAIECCAE=</HashCode>
+      <FileName>Models\Listing.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Models.Neighbourhood">
+    <Position X="7" Y="8" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Models\Neighbourhood.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Models.Review">
+    <Position X="7" Y="5.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAKAAAAABAABAAAAAAAAAAAAAAAAAABAAAEAAAAIAA=</HashCode>
+      <FileName>Models\Review.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Redis.RedisCacheSeeder">
+    <Position X="12" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Redis\RedisCacheSeeder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="api.Redis.RedisCacheService">
+    <Position X="12" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAACAAA=</HashCode>
+      <FileName>Redis\RedisCacheService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="api.Repositories.IGenericRepository&lt;T&gt;">
+    <Position X="4.5" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAgAAAAAAAAAAAAAAEAAAAAAAgAAAAAABAAIIA=</HashCode>
+      <FileName>Repositories\IGenericRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="api.Repositories.IListingRepository">
+    <Position X="4.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Repositories\IListingRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

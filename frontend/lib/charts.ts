@@ -9,15 +9,24 @@ import {
 } from '@/queries/charts';
 import { auth0 } from './auth0';
 
+interface Dataset {
+  label: string;
+  data: number[];
+  backgroundColor: string | string[];
+  borderColor: string;
+  borderWidth: number;
+  borderRadius?: number;
+}
+
 /**
  * Generates chart data for average price per neighbourhood.
  * Fetches average price data and formats it for charting libraries.
  *
- * @returns {Promise<{ labels: string[], datasets: any[] }>} Chart data object with labels and datasets.
+ * @returns {Promise<{ labels: string[], datasets: Dataset[] }>} Chart data object with labels and datasets.
  */
 export const createAveragePricePerNeighbourhoodData = async (): Promise<{
   labels: string[];
-  datasets: any[];
+  datasets: Dataset[];
 }> => {
   const accessToken = await auth0.getAccessToken();
   if (!accessToken) throw new Error('No access token found');
@@ -48,11 +57,11 @@ export const createAveragePricePerNeighbourhoodData = async (): Promise<{
  * Generates chart data for active listings per neighbourhood.
  * Fetches active listings data and formats it for charting libraries.
  *
- * @returns {Promise<{ labels: string[], datasets: any[] }>} Chart data object with labels and datasets.
+ * @returns {Promise<{ labels: string[], datasets: Dataset[] }>} Chart data object with labels and datasets.
  */
 export const createActiveListingsPerNeighbourhoodData = async (): Promise<{
   labels: string[];
-  datasets: any[];
+  datasets: Dataset[];
 }> => {
   const accessToken = await auth0.getAccessToken();
   if (!accessToken) throw new Error('No access token found');
@@ -82,11 +91,11 @@ export const createActiveListingsPerNeighbourhoodData = async (): Promise<{
  * Generates chart data for reviews per month.
  * Fetches monthly reviews data and formats it for charting libraries.
  *
- * @returns {Promise<{ labels: string[], datasets: any[] }>} Chart data object with labels and datasets.
+ * @returns {Promise<{ labels: string[], datasets: Dataset[] }>} Chart data object with labels and datasets.
  */
 export const createReviewsPerMonthData = async (): Promise<{
   labels: string[];
-  datasets: any[];
+  datasets: Dataset[];
 }> => {
   const accessToken = await auth0.getAccessToken();
   if (!accessToken) throw new Error('No access token found');
@@ -112,10 +121,10 @@ export const createReviewsPerMonthData = async (): Promise<{
  * Generates chart data for average reviews per month per neighbourhood.
  * Fetches average reviews data and formats it for charting libraries.
  *
- * @returns {Promise<{ labels: string[], datasets: any[] }>} Chart data object with labels and datasets.
+ * @returns {Promise<{ labels: string[], datasets: Dataset[] }>} Chart data object with labels and datasets.
  */
 export const createAverageReviewsPerMonthPerNeighbourhoodData =
-  async (): Promise<{ labels: string[]; datasets: any[] }> => {
+  async (): Promise<{ labels: string[]; datasets: Dataset[] }> => {
     const accessToken = await auth0.getAccessToken();
     if (!accessToken) throw new Error('No access token found');
     const averageReviewsPerMonthPerNeighbourhood =
@@ -145,11 +154,11 @@ export const createAverageReviewsPerMonthPerNeighbourhoodData =
  * Generates chart data for room types.
  * Fetches room types data and formats it for charting libraries.
  *
- * @returns {Promise<{ labels: string[], datasets: any[] }>} Chart data object with labels and datasets.
+ * @returns {Promise<{ labels: string[], datasets: Dataset[] }>} Chart data object with labels and datasets.
  */
 export const createRoomTypesData = async (): Promise<{
   labels: string[];
-  datasets: any[];
+  datasets: Dataset[];
 }> => {
   const accessToken = await auth0.getAccessToken();
   if (!accessToken) throw new Error('No access token found');

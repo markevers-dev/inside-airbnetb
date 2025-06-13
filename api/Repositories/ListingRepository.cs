@@ -4,9 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
-    public class ListingRepository(InsideAirbnetbDbContext context) : GenericRepository<Listing>(context), IListingRepository
+    public class ListingRepository : GenericRepository<Listing>, IListingRepository
     {
-        private readonly InsideAirbnetbDbContext _context = context;
+        private readonly InsideAirbnetbDbContext _context;
+
+        public ListingRepository(InsideAirbnetbDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
         public async Task<(List<ListingLatLongDto> Listings, int TotalCount)> GetPagedSummariesAsync(int? minReviews, string? priceRange, string? neighbourhood, int pageNumber = 1, int pageSize = 50)
         {
