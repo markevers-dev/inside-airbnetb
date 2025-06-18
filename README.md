@@ -4,7 +4,7 @@ The goal of the project is to provide (fictional) management at [InsideAirbnb](h
 
 ## 📝 Background of the Project
 
-This application was was developed as an assignment for the I-NotS WAPP 2025 P4 course at the HAN University of Applied Sciences. It received a final grade of UNGRADED.
+This application was was developed as an assignment for the I-NotS WAPP 2025 P4 course at the HAN University of Applied Sciences. It received a final grade of 7.4 / 10.
 The data which was used for this application was sourced from Inside Airbnb on 05/06/2025 ([https://insideairbnb.com/get-the-data/](https://insideairbnb.com/get-the-data/))
 
 ## 🚀 Functions
